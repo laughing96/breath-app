@@ -4,8 +4,11 @@ import { BreathingEngine } from "../services/BreathingEngine";
 
 import {
     type BreathState,
-    Phase,
+    // Phase,
 } from "../models/Breathings"
+
+import {type BreathPattern } from "../models/Breathings";
+import { BOX_BREATHING } from "../models/Patterns";
 
 
 const DEFAUKT_PATTERN = {
@@ -28,6 +31,9 @@ export function useBreathing() {
              engine.getState()
      );
 
+     const [pattern, setPattern] = 
+         useState(BOX_BREATHING);
+
      useEffect(() => {
          const unsubscribe = engine.subscribe((newState) => {
              setState(newState);
@@ -36,6 +42,16 @@ export function useBreathing() {
              unsubscribe();
          };
      }, [engine]);
+
+    const changePattern = (
+        pattern: BreathPattern
+    ) => {
+        console.log('change pattern:', pattern.name)
+        // engine.updatePattern(pattern);
+        engineRef.current?.updatePattern(pattern);
+
+        setPattern(pattern);
+    }
 
     const start = () => {
         engine.start();
@@ -51,10 +67,14 @@ export function useBreathing() {
     };
     return {
         state,
+        pattern,
+
         start,
         pause,
         resume,
         stop,
+
+        changePattern,
     };
 
 }

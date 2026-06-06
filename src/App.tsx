@@ -4,9 +4,12 @@ import { BreathingCircle } from "./components/Breathingcircle";
 import { PhaseLabel } from "./components/PhaseLabel";
 import { Countdown } from "./components/Countdown";
 import { ControlPanel } from "./components/ControlPanel";
+import { PatternSelector } from "./components/PatternSelector";
+import { PATTERNS } from "./models/Patterns";
 
 export default function App() {
     const { state, start, pause, resume, stop } = useBreathing();
+    const { pattern, changePattern } = useBreathing();
 
     return (
         <div
@@ -19,12 +22,22 @@ export default function App() {
                 gap: 24,
             }}
         >
+            <PatternSelector
+                value={pattern.name}
+                patterns={PATTERNS}
+                onChange={(name) => {
+                    const pattern = PATTERNS.find((p) => p.name === name);
+                    if (pattern) {
+                        changePattern(pattern);
+                    }
+                }}
+            />
             <BreathingCircle phase={state.phase} />
             <PhaseLabel phase={state.phase} />
             <Countdown remaining={state.remaining} />
             <div> Cycle:{state.cycle} </div>
             <ControlPanel
-            running={state.running}
+                running={state.running}
                 onStart={start}
                 onPause={pause}
                 onResume={resume}

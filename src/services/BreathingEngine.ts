@@ -17,6 +17,16 @@ export class BreathingEngine {
         this.pattern = pattern;
     }
 
+    updatePattern(
+        pattern: BreathPattern
+    ){
+        this.pattern = pattern;
+        // this.stop();
+        console.log("pattern is ",this.pattern.name);
+        console.log("pattern is", this.pattern);
+        // this.start();
+    }
+
     // why
     subscribe(listener: StateListener) {
         this.listeners.push(listener);
@@ -112,6 +122,7 @@ export class BreathingEngine {
     private durationOf(
         phase: Phase
     ): number {
+        console.log("durationof",this.pattern);
         switch (phase) {
             case Phase.INHALE:
                 return this.pattern.inhale;
