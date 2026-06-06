@@ -8,8 +8,8 @@ import { PatternSelector } from "./components/PatternSelector";
 import { PATTERNS } from "./models/Patterns";
 
 export default function App() {
-    const { state, start, pause, resume, stop } = useBreathing();
-    const { pattern, changePattern } = useBreathing();
+    const { state,pattern, start, pause, resume, stop, changePattern } = useBreathing();
+    // const { pattern, changePattern } = useBreathing();
 
     return (
         <div

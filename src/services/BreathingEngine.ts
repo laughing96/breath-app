@@ -21,11 +21,7 @@ export class BreathingEngine {
         pattern: BreathPattern
     ){
         this.pattern = pattern;
-        // this.stop();
-        console.log("pattern is ",this.pattern.name);
-        console.log("pattern is", this.pattern);
-        // this.start();
-    }
+        }
 
     // why
     subscribe(listener: StateListener) {
