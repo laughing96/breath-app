@@ -13,10 +13,10 @@ import { BOX_BREATHING } from "../models/Patterns";
 import type { BreathUIState } from "../models/BreathUIState";
 
 const DEFAUKT_PATTERN = {
-    name: "Box",
-    inhale: 4,
+    name: "sxz",
+    inhale: 8,
     hold1: 4,
-    exhale: 4,
+    exhale: 8,
     hold2: 4,
 };
 

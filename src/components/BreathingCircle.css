@@ -1,0 +1,10 @@
+.breathing-circle{
+    width:200px;
+    height:200px;
+    border-radius:50%;
+
+    display:fles;
+    align-items: center;
+    justify-content: center;
+
+}

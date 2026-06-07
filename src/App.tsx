@@ -6,24 +6,16 @@ import { Countdown } from "./components/Countdown";
 import { ControlPanel } from "./components/ControlPanel";
 import { PatternSelector } from "./components/PatternSelector";
 import { PATTERNS } from "./models/Patterns";
+import "./App.css"
 
 export default function App() {
-    const { state,uiState, pattern, start, pause, resume, stop, changePattern } =
+    const { uiState, pattern, start, pause, resume, stop, changePattern } =
         useBreathing();
     // const { pattern, changePattern } = useBreathing();
 
     return (
-        <div
-            style={{
-                minHeight: "100vh",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 20,
-            }}
-        >
-            <div style={{ minHeight: "20vh", alignItems: "start" }}>
+        <div className="app">
+            <div className="sidebar">
                 <PatternSelector
                     value={pattern.name}
                     patterns={PATTERNS}
@@ -35,17 +27,19 @@ export default function App() {
                     }}
                 />
             </div>
-            <BreathingCircle uiState={uiState} />
-            <PhaseLabel phase={uiState.phase} />
-            <Countdown remaining={uiState.remaining} />
-            <div> Cycle:{uiState.cycle} </div>
-            <ControlPanel
-                running={uiState.running}
-                onStart={start}
-                onPause={pause}
-                onResume={resume}
-                onStop={stop}
-            />
+            <div className="main">
+                <BreathingCircle uiState={uiState} />
+                <PhaseLabel phase={uiState.phase} />
+                <Countdown remaining={uiState.remaining} />
+                <div> Cycle:{uiState.cycle} </div>
+                <ControlPanel
+                    running={uiState.running}
+                    onStart={start}
+                    onPause={pause}
+                    onResume={resume}
+                    onStop={stop}
+                />
+            </div>
         </div>
     );
 }

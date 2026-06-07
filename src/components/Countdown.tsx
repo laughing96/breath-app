@@ -4,7 +4,7 @@ interface CountdownProps {
 
 export function Countdown({ remaining }: CountdownProps) {
     return (
-        <div style={{fontSize:48, fontWeight:"bold",}}>
+        <div>
         {remaining}
         </div>
     )

@@ -1,3 +1,5 @@
+import "./ControlPanel.css"
+
 interface ControlPaneProps {
     running: boolean;
     onStart: () => void;
@@ -14,7 +16,8 @@ export function ControlPanel({
     onStop,
 }: ControlPaneProps) {
     return (
-        <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
+        // <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
+        <div className="control-panel">
             {!running ? (
                 <>
                     <button onClick={onStart}>Start</button>
