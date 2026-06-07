@@ -1,27 +1,9 @@
-import { Phase } from "../models/Breathings";
+import type { BreathUIState } from "../models/BreathUIState";
 
-interface Props {
-    phase: string;
-}
+export function BreathingCircle({ uiState }: { uiState: BreathUIState }) {
+    const scale = uiState.scale;
 
-export function BreathingCircle({ phase }: Props) {
-    let scale = 1;
-    const color =
-        phase === Phase.INHALE || phase === Phase.HOLD1 ? "#60a5fa" : "#34d399";
-    switch (phase) {
-        case Phase.INHALE:
-            scale = 1.3;
-            break;
-        case Phase.HOLD1:
-            scale = 1.3;
-            break;
-        case Phase.EXHALE:
-            scale = 1;
-            break;
-        case Phase.HOLD2:
-            scale = 1;
-            break;
-    }
+    const color = uiState.color;
     return (
         <div
             style={{
@@ -29,7 +11,6 @@ export function BreathingCircle({ phase }: Props) {
                 height: 200,
                 borderRadius: "50%",
                 background: color,
-
                 transform: `scale(${scale})`,
                 transition: "transform 4s linear",
             }}

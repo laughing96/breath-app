@@ -1,6 +1,7 @@
-import { Phase } from "../models/Breathings.ts";
+import Phase from "../models/Breathings.ts";
 
 const phaseMap = {
+    START:"开始",
     INHALE: "吸气",
     HOLD1: "屏息",
     EXHALE: "呼气",

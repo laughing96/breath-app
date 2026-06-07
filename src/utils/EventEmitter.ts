@@ -4,7 +4,7 @@ export class EventEmitter<T> {
     private listeners: Set<Listener<T>> = new Set();
     subscribe(listener: Listener<T>) {
         this.listeners.add(listener);
-
+        // console.log(listener);
         return () => {
             this.listeners.delete(listener);
         };

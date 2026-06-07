@@ -1,124 +1,126 @@
-import {
+import Phase, {
     type BreathPattern,
     type BreathState,
-    Phase,
-    type StateListener,
 } from "../models/Breathings";
+import { EventEmitter } from "../utils/EventEmitter";
 
-export class BreathingEngine {
+export class BreathingEngine extends EventEmitter<BreathState> {
     private pattern: BreathPattern;
-    private phase: Phase = Phase.INHALE;
-    private remaining = 0;
-    private cycle = 0;
-    private running = false;
     private timer: number | null = null;
-    private listeners: StateListener[] = [];
+    private state: BreathState;
+
     constructor(pattern: BreathPattern) {
+        //  初始化 对象 赋值
+        super();
         this.pattern = pattern;
+        this.state = {
+            phase: Phase.START,
+            remaining: pattern.inhale,
+            cycle: 0,
+            running: false,
+        };
     }
 
-    updatePattern(
-        pattern: BreathPattern
-    ){
-        this.pattern = pattern;
+    private tick() {
+        // this.state.remaining--;
+        this.state = {
+            ...this.state,
+            remaining: this.state.remaining -1,
+        };
+        // console.log(this.state);
+
+        if (this.state.remaining <= 0) {
+            this.moveToNextPhase();
         }
 
-    // why
-    subscribe(listener: StateListener) {
-        this.listeners.push(listener);
+        this.emit(this.state);
+    }
 
-        return () => {
-            this.listeners = this.listeners.filter((l) => l !== listener);
-        };
+    updatePattern(pattern: BreathPattern) {
+        this.pattern = pattern;
     }
 
     start() {
-        if (this.running) {
-            return;
-        }
-        this.phase = Phase.INHALE;
-        this.remaining = this.pattern.inhale;
-        this.cycle = 1;
-        this.running = true;
-        this.emit();
-
+        this.state = {
+            phase: Phase.INHALE,
+            remaining: this.pattern.inhale,
+            cycle: 0,
+            running: true,
+        };
+        this.emit(this.state);
+        // 每隔1000ms执行一次箭头函数
+        // window 明确表明 setInterval 是浏览器API
+        // 浏览器 的 setInterval 返回number, node.js 里面返回 NodeJS.Timeout
+        // console.log(this.state);
         this.timer = window.setInterval(() => this.tick(), 1000);
     }
     pause() {
-        if (!this.running) {
-            return;
-        }
-        this.running = false;
+        this.state = {
+            phase: this.state.phase,
+            remaining: this.state.remaining,
+            cycle: this.state.cycle,
+            running: false,
+        };
         if (this.timer !== null) {
+            // 浏览器 和 Node 都有有这个函数
             clearInterval(this.timer);
             this.timer = null;
         }
-        this.emit();
+        this.emit(this.state);
     }
 
     resume() {
-        if (this.running) {
-            return;
-        }
-        this.running = true;
-        this.emit();
+        this.state = {
+            phase: this.state.phase,
+            remaining: this.state.remaining,
+            cycle: this.state.cycle,
+            running: true,
+        };
+        this.emit(this.state);
         this.timer = window.setInterval(() => this.tick(), 1000);
     }
     stop() {
-        this.running = false;
         if (this.timer !== null) {
             clearInterval(this.timer);
             this.timer = null;
         }
-        this.phase = Phase.INHALE;
-        this.remaining = 0;
-        this.cycle = 0;
+        this.state = {
+            phase: Phase.INHALE,
+            remaining: 0,
+            cycle: 0,
+            running: false,
+        };
 
-        this.emit();
+        this.emit(this.state);
     }
 
     getState(): BreathState {
-        return {
-            phase: this.phase,
-            remaining: this.remaining,
-            cycle: this.cycle,
-            running: this.running,
-        };
+        return this.state;
     }
-    private tick() {
-        if (!this.running) {
-            return;
-        }
-        this.remaining--;
-        if (this.remaining <= 0) {
-            this.moveToNextPhase();
-        }
-        this.emit();
-    }
-
     private moveToNextPhase() {
-        switch (this.phase) {
+        switch (this.state.phase) {
+            case Phase.START:
+                this.state.phase = Phase.INHALE;
+                break;
             case Phase.INHALE:
-                this.phase = Phase.HOLD1;
+                this.state.phase = Phase.HOLD1;
                 break;
             case Phase.HOLD1:
-                this.phase = Phase.EXHALE;
+                this.state.phase = Phase.EXHALE;
                 break;
             case Phase.EXHALE:
-                this.phase = Phase.HOLD2;
+                this.state.phase = Phase.HOLD2;
                 break;
             case Phase.HOLD2:
-                this.phase = Phase.INHALE;
-                this.cycle++;
+                this.state.phase = Phase.INHALE;
+                this.state.cycle++;
                 break;
         }
-        this.remaining = this.durationOf(this.phase);
+        this.state.remaining = this.durationOf(this.state.phase);
     }
 
-    private durationOf(
-        phase: Phase
-    ): number {
-        console.log("durationof",this.pattern);
+    private durationOf(phase: Phase): number {
+        // console.log("durationof", this.pattern);
         switch (phase) {
             case Phase.INHALE:
                 return this.pattern.inhale;
@@ -129,11 +131,5 @@ export class BreathingEngine {
             case Phase.HOLD2:
                 return this.pattern.hold2;
         }
-    }
-
-    private emit() {
-        const state = this.getState();
-        this.listeners.forEach((listener) =>
-            listener(state));
     }
 }

@@ -1,12 +1,14 @@
 export enum Phase {
+    START = "START",
     INHALE = "INHALE",
     HOLD1 = "HOLD1",
     EXHALE = "EXHALE",
     HOLD2 = "HOLD2",
 }
+export default Phase;
 
 export interface BreathPattern {
-    name: String;
+    name: string;
     inhale: number;
     hold1: number;
     exhale: number;
@@ -20,6 +22,4 @@ export interface BreathState {
     running: boolean;
 }
 
-export type StateListener = (
-    state: BreathState
-) => void;
+export type StateListener = (state: BreathState) => void;
