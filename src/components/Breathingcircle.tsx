@@ -6,6 +6,7 @@ export function BreathingCircle({ uiState }: { uiState: BreathUIState }) {
 
     const color = uiState.color;
     const all_dura = uiState.all_dura;
+    // console.log(`all dura is ${all_dura}`)
     return (
         <div
         className="breathing-circle"

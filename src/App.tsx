@@ -5,8 +5,9 @@ import { PhaseLabel } from "./components/PhaseLabel";
 import { Countdown } from "./components/Countdown";
 import { ControlPanel } from "./components/ControlPanel";
 import { PatternSelector } from "./components/PatternSelector";
+import { PatternPreview } from "./components/PatternPrevies";
 import { PATTERNS } from "./models/Patterns";
-import "./App.css"
+import "./App.css";
 
 export default function App() {
     const { uiState, pattern, start, pause, resume, stop, changePattern } =
@@ -26,6 +27,7 @@ export default function App() {
                         }
                     }}
                 />
+                <PatternPreview pattern={pattern} />
             </div>
             <div className="main">
                 <BreathingCircle uiState={uiState} />
