@@ -2,17 +2,20 @@ import Phase, {
     type BreathPattern,
     type BreathState,
 } from "../models/Breathings";
+import { type SessionConfig, MySession } from "../models/SessionConfig";
 import { EventEmitter } from "../utils/EventEmitter";
 
 export class BreathingEngine extends EventEmitter<BreathState> {
     private pattern: BreathPattern;
     private timer: number | null = null;
     private state: BreathState;
+    private session: SessionConfig ;
 
-    constructor(pattern: BreathPattern) {
+    constructor(pattern: BreathPattern, ) {
         //  初始化 对象 赋值
         super();
         this.pattern = pattern;
+        this.session = MySession;
         this.state = {
             phase: Phase.START,
             remaining: pattern.inhale,
@@ -38,6 +41,11 @@ export class BreathingEngine extends EventEmitter<BreathState> {
 
     updatePattern(pattern: BreathPattern) {
         this.pattern = pattern;
+    }
+
+    updateSession(session: SessionConfig){
+        console.log(`update session ${session.maxCycles}`);
+        this.session = session;
     }
 
     start() {
@@ -97,6 +105,10 @@ export class BreathingEngine extends EventEmitter<BreathState> {
     getState(): BreathState {
         return this.state;
     }
+
+    getSession(): SessionConfig{
+        return this.session;
+    }
     private moveToNextPhase() {
         switch (this.state.phase) {
             case Phase.START:
@@ -117,6 +129,10 @@ export class BreathingEngine extends EventEmitter<BreathState> {
                 break;
         }
         this.state.remaining = this.durationOf(this.state.phase);
+        console.log(`state ${this.state.cycle} max ${this.session.maxCycles}`)
+        if (this.state.cycle >= this.session.maxCycles){
+            this.stop();
+        }
     }
 
     private durationOf(phase: Phase): number {
@@ -130,6 +146,8 @@ export class BreathingEngine extends EventEmitter<BreathState> {
                 return this.pattern.exhale;
             case Phase.HOLD2:
                 return this.pattern.hold2;
+            default:
+                return 0;
         }
     }
 }

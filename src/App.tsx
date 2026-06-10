@@ -8,9 +8,10 @@ import { PatternSelector } from "./components/PatternSelector";
 import { PatternPreview } from "./components/PatternPrevies";
 import { PATTERNS } from "./models/Patterns";
 import "./App.css";
+import { PatternEditor } from "./components/PatternEditor";
 
 export default function App() {
-    const { uiState, pattern, start, pause, resume, stop, changePattern } =
+    const { uiState, pattern, session, start, pause, resume, stop, changePattern } =
         useBreathing();
     // const { pattern, changePattern } = useBreathing();
 
@@ -27,7 +28,8 @@ export default function App() {
                         }
                     }}
                 />
-                <PatternPreview pattern={pattern} />
+                {/* <PatternPreview pattern={pattern} /> */}
+                <PatternEditor pattern={pattern} session={session} onApply={changePattern} />
             </div>
             <div className="main">
                 <BreathingCircle uiState={uiState} />
