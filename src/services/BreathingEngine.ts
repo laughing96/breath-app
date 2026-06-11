@@ -9,9 +9,9 @@ export class BreathingEngine extends EventEmitter<BreathState> {
     private pattern: BreathPattern;
     private timer: number | null = null;
     private state: BreathState;
-    private session: SessionConfig ;
+    private session: SessionConfig;
 
-    constructor(pattern: BreathPattern, ) {
+    constructor(pattern: BreathPattern) {
         //  初始化 对象 赋值
         super();
         this.pattern = pattern;
@@ -28,7 +28,7 @@ export class BreathingEngine extends EventEmitter<BreathState> {
         // this.state.remaining--;
         this.state = {
             ...this.state,
-            remaining: this.state.remaining -1,
+            remaining: this.state.remaining - 1,
         };
         // console.log(this.state);
 
@@ -43,8 +43,8 @@ export class BreathingEngine extends EventEmitter<BreathState> {
         this.pattern = pattern;
     }
 
-    updateSession(session: SessionConfig){
-        console.log(`update session ${session.maxCycles}`);
+    updateSession(session: SessionConfig) {
+        // console.log(`update session ${session.maxCycles}`);
         this.session = session;
     }
 
@@ -106,7 +106,7 @@ export class BreathingEngine extends EventEmitter<BreathState> {
         return this.state;
     }
 
-    getSession(): SessionConfig{
+    getSession(): SessionConfig {
         return this.session;
     }
     private moveToNextPhase() {
@@ -129,9 +129,25 @@ export class BreathingEngine extends EventEmitter<BreathState> {
                 break;
         }
         this.state.remaining = this.durationOf(this.state.phase);
-        console.log(`state ${this.state.cycle} max ${this.session.maxCycles}`)
-        if (this.state.cycle >= this.session.maxCycles){
+        // console.log(`state ${this.state.cycle} max ${this.session.maxCycles}`)
+        if (this.state.cycle >= this.session.maxCycles) {
+            console.log('cycle');
             this.stop();
+        }
+
+        if (this.state.phase === Phase.INHALE) {
+            const pattern_all_time =
+                this.pattern.exhale +
+                this.pattern.inhale +
+                this.pattern.hold1 +
+                this.pattern.hold2;
+            // 最大时间按分钟
+            const pass_time = pattern_all_time * this.state.cycle / 60;
+
+            if (pass_time > this.session.maxTimeMin) {
+                console.log(`phase ${this.state.phase} ${pass_time}`);
+                this.stop();
+            }
         }
     }
 

@@ -42,6 +42,10 @@ export function useBreathing() {
         };
     }, [engine]);
 
+
+    const [saved, setSaved] = useState(false)
+
+
     const changePattern = (pattern: BreathPattern, session: SessionConfig) => {
         // console.log("change pattern:", pattern.name);
         // engine.updatePattern(pattern);
@@ -51,6 +55,8 @@ export function useBreathing() {
         // me:告诉UI
         setPattern(pattern);
         setSession(session);
+        setSaved(true);
+        console.log(`apply ${session}`);
         // setUIState(deriveState(newState, pattern));
     };
 
@@ -75,6 +81,7 @@ export function useBreathing() {
         uiState,
         pattern,
         session,
+        saved,
 
         start,
         pause,

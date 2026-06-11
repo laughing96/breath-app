@@ -9,9 +9,10 @@ import { PatternPreview } from "./components/PatternPrevies";
 import { PATTERNS } from "./models/Patterns";
 import "./App.css";
 import { PatternEditor } from "./components/PatternEditor";
+import { useState } from "react";
 
 export default function App() {
-    const { uiState, pattern, session, start, pause, resume, stop, changePattern } =
+    const { uiState, pattern, session, saved, start, pause, resume, stop, changePattern } =
         useBreathing();
     // const { pattern, changePattern } = useBreathing();
 
@@ -24,12 +25,12 @@ export default function App() {
                     onChange={(name) => {
                         const pattern = PATTERNS.find((p) => p.name === name);
                         if (pattern) {
-                            changePattern(pattern);
+                            changePattern(pattern,session);
                         }
                     }}
                 />
                 {/* <PatternPreview pattern={pattern} /> */}
-                <PatternEditor pattern={pattern} session={session} onApply={changePattern} />
+                <PatternEditor pattern={pattern} session={session} saved={saved} onApply={changePattern} />
             </div>
             <div className="main">
                 <BreathingCircle uiState={uiState} />

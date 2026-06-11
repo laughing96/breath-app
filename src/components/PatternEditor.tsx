@@ -6,12 +6,14 @@ import type { SessionConfig } from "../models/SessionConfig";
 interface PatternEditorProps {
     pattern: BreathPattern;
     session: SessionConfig;
-    onApply: (pattern: BreathPattern, session:SessionConfig) => void;
+    saved: boolean;
+    onApply: (pattern: BreathPattern, session: SessionConfig) => void;
 }
 
 export function PatternEditor({
     pattern,
     session,
+    saved,
     onApply,
 }: PatternEditorProps) {
     const [draft, setDraft] = useState<BreathPattern>(pattern);
@@ -26,26 +28,40 @@ export function PatternEditor({
             [field]: value,
         }));
     };
-    const updateCycle = (field: keyof SessionConfig, value: number) => {
+    const updateSessionField = (field: keyof SessionConfig, value: number) => {
         setSessionDraft((prev) => ({
             ...prev,
             [field]: value,
         }));
     };
+
     const rowStyle = {
         // display: "flex",
         // alignItems: "center",
         // gap: 40,
         // marginBottom: 8,
         display: "grid",
-        gridTemplateColumns: " 80px 120px",
+        gridTemplateColumns: "150px 1fr",
         rowGap: 8,
         columnGap: 8,
     };
 
     const fields = ["inhale", "hold1", "exhale", "hold2"] as const;
 
+    const session_fields = ["maxCycles", "maxTimeMin"] as const;
+
     const total = pattern.inhale + pattern.hold1 + pattern.exhale + pattern.hold2;
+
+    const cycle = session.maxCycles;
+
+    // const all_time = (total * cycle / 60 ).toFixed(2) ; // str
+    const all_time_sec = total * cycle;
+    const all_time = Math.round(total * cycle / 60 *100) /100;
+
+
+    const dirty =
+        JSON.stringify(draft) !== JSON.stringify(pattern) ||
+        JSON.stringify(session_draft) !== JSON.stringify(session);
 
     return (
         <div
@@ -67,24 +83,31 @@ export function PatternEditor({
                     />
                 </div>
             ))}
-            <div style={rowStyle}>
-                <span> cycle </span>
-                <input
-                    type="number"
-                    value={session_draft["maxCycles"]}
-                    onChange={(e) => updateCycle("maxCycles", Number(e.target.value))}
-                />
-            </div>
+            <hr />
+            {session_fields.map((field) => (
+                <div key={field} style={rowStyle}>
+                    <span> {field} </span>
+                    <input
+                        type="number"
+                        value={session_draft[field]}
+                        onChange={(e) => updateSessionField(field, Number(e.target.value))}
+                    />
+                </div>
+            ))}
             <hr />
 
-            <div>Total: {total}s </div>
+            <div>Total: {total}s X {cycle} = {all_time_sec}s = {all_time} min</div>
             <button
                 style={{
                     marginTop: 12,
                 }}
-                onClick={() => onApply(draft, session_draft)}
+                disabled={!dirty}
+                onClick={() => {
+                    onApply(draft, session_draft);
+                }}
             >
-                Apply
+                {/*{saved ? <div>✓ Applied</div> : <div> Apply </div>} */}
+                {dirty ? <div> Apply</div> : <div> ✓ Applied </div>}
             </button>
         </div>
     );

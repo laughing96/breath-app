@@ -10,7 +10,8 @@
 }
 
 .sidebar {
-    width: 150px;
+    /* width: 150px; */
+    flex: 1;
     /* border: 3px solid blue; */
     display: flex;
     flex-direction: column; /*竖直是主轴*/
@@ -27,7 +28,7 @@
     justify-content: center;
     gap: 20px;
 
-    flex: 1;
+    flex: 2;
 
 }
 }
