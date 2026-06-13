@@ -10,14 +10,40 @@ import { PATTERNS } from "./models/Patterns";
 import "./App.css";
 import { PatternEditor } from "./components/PatternEditor";
 import { useState } from "react";
+import { StatisticsPanel } from "./components/StatisticsPanel";
+import { StatisticsService } from "./services/StatisticsService";
 
 export default function App() {
-    const { uiState, pattern, session, saved, start, pause, resume, stop, changePattern } =
-        useBreathing();
+    const {
+        uiState,
+        pattern,
+        session,
+        saved,
+        start,
+        pause,
+        resume,
+        stop,
+        changePattern,
+    } = useBreathing();
     // const { pattern, changePattern } = useBreathing();
+    // const statistics = StatisticsService.getStatistics();
+    const [statistics, setStatistics] = useState(
+        StatisticsService.getStatistics(),
+    );
 
     return (
         <div className="app">
+            <div>
+                <StatisticsPanel statistics={statistics} />
+                <button
+                    onClick={() => {
+                        const updated = StatisticsService.recordSession(10, 2.67);
+                        setStatistics(updated);
+                    }}
+                >
+                    Add session
+                </button>
+            </div>
             <div className="sidebar">
                 <PatternSelector
                     value={pattern.name}
@@ -25,12 +51,17 @@ export default function App() {
                     onChange={(name) => {
                         const pattern = PATTERNS.find((p) => p.name === name);
                         if (pattern) {
-                            changePattern(pattern,session);
+                            changePattern(pattern, session);
                         }
                     }}
                 />
                 {/* <PatternPreview pattern={pattern} /> */}
-                <PatternEditor pattern={pattern} session={session} saved={saved} onApply={changePattern} />
+                <PatternEditor
+                    pattern={pattern}
+                    session={session}
+                    saved={saved}
+                    onApply={changePattern}
+                />
             </div>
             <div className="main">
                 <BreathingCircle uiState={uiState} />
