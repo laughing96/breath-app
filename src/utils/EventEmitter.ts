@@ -1,4 +1,4 @@
-type Listener<T> = (payload: T) => void;
+export type Listener<T> = (payload: T) => void;
 
 export class EventEmitter<T> {
     private listeners: Set<Listener<T>> = new Set();

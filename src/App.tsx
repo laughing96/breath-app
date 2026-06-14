@@ -18,6 +18,7 @@ export default function App() {
         uiState,
         pattern,
         session,
+        statistic,
         saved,
         start,
         pause,
@@ -27,24 +28,11 @@ export default function App() {
     } = useBreathing();
     // const { pattern, changePattern } = useBreathing();
     // const statistics = StatisticsService.getStatistics();
-    const [statistics, setStatistics] = useState(
-        StatisticsService.getStatistics(),
-    );
 
     return (
         <div className="app">
-            <div>
-                <StatisticsPanel statistics={statistics} />
-                <button
-                    onClick={() => {
-                        const updated = StatisticsService.recordSession(10, 2.67);
-                        setStatistics(updated);
-                    }}
-                >
-                    Add session
-                </button>
-            </div>
             <div className="sidebar">
+                <StatisticsPanel statistics={statistic} />
                 <PatternSelector
                     value={pattern.name}
                     patterns={PATTERNS}

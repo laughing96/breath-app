@@ -2,10 +2,23 @@ import Phase, {
     type BreathPattern,
     type BreathState,
 } from "../models/Breathings";
+import type { SessionCompeleteEvent } from "../models/SessionCompleteEvent";
 import { type SessionConfig, MySession } from "../models/SessionConfig";
-import { EventEmitter } from "../utils/EventEmitter";
+import type { Statistics } from "../models/Statistics";
+import { EventEmitter, type Listener } from "../utils/EventEmitter";
+import { StatisticsService } from "./StatisticsService";
+import { StorageService } from "./StorageService";
 
-export class BreathingEngine extends EventEmitter<BreathState> {
+export class BreathingEngine {
+    private stateEmitter = new EventEmitter<BreathState>();
+    private sessionCompleteEmitter = new EventEmitter<SessionCompeleteEvent>();
+
+    subsscribeState(listener: Listener<BreathState>) {
+        return this.stateEmitter.subscribe(listener);
+    }
+    subscribeSessionComplete(listener: (event: SessionCompeleteEvent) => void) {
+        return this.sessionCompleteEmitter.subscribe(listener);
+    }
     private pattern: BreathPattern;
     private timer: number | null = null;
     private state: BreathState;
@@ -13,7 +26,6 @@ export class BreathingEngine extends EventEmitter<BreathState> {
 
     constructor(pattern: BreathPattern) {
         //  初始化 对象 赋值
-        super();
         this.pattern = pattern;
         this.session = MySession;
         this.state = {
@@ -36,7 +48,7 @@ export class BreathingEngine extends EventEmitter<BreathState> {
             this.moveToNextPhase();
         }
 
-        this.emit(this.state);
+        this.stateEmitter.emit(this.state);
     }
 
     updatePattern(pattern: BreathPattern) {
@@ -55,7 +67,7 @@ export class BreathingEngine extends EventEmitter<BreathState> {
             cycle: 0,
             running: true,
         };
-        this.emit(this.state);
+        this.stateEmitter.emit(this.state);
         // 每隔1000ms执行一次箭头函数
         // window 明确表明 setInterval 是浏览器API
         // 浏览器 的 setInterval 返回number, node.js 里面返回 NodeJS.Timeout
@@ -74,7 +86,7 @@ export class BreathingEngine extends EventEmitter<BreathState> {
             clearInterval(this.timer);
             this.timer = null;
         }
-        this.emit(this.state);
+        this.stateEmitter.emit(this.state);
     }
 
     resume() {
@@ -84,7 +96,7 @@ export class BreathingEngine extends EventEmitter<BreathState> {
             cycle: this.state.cycle,
             running: true,
         };
-        this.emit(this.state);
+        this.stateEmitter.emit(this.state);
         this.timer = window.setInterval(() => this.tick(), 1000);
     }
     stop() {
@@ -99,11 +111,15 @@ export class BreathingEngine extends EventEmitter<BreathState> {
             running: false,
         };
 
-        this.emit(this.state);
+        this.stateEmitter.emit(this.state);
     }
 
     getState(): BreathState {
         return this.state;
+    }
+
+    getStatics(): Statistics{
+        return   StorageService.loadStatistics();
     }
 
     getSession(): SessionConfig {
@@ -129,23 +145,31 @@ export class BreathingEngine extends EventEmitter<BreathState> {
                 break;
         }
         this.state.remaining = this.durationOf(this.state.phase);
+        const pattern_all_time =
+            this.pattern.exhale +
+            this.pattern.inhale +
+            this.pattern.hold1 +
+            this.pattern.hold2;
+        // 最大时间按分钟
+        const pass_time = (pattern_all_time * this.state.cycle) / 60;
+
         // console.log(`state ${this.state.cycle} max ${this.session.maxCycles}`)
         if (this.state.cycle >= this.session.maxCycles) {
-            console.log('cycle');
+            console.log("cycle");
+            this.sessionCompleteEmitter.emit({
+                cycles: this.state.cycle,
+                minutes: pass_time,
+            });
             this.stop();
         }
 
         if (this.state.phase === Phase.INHALE) {
-            const pattern_all_time =
-                this.pattern.exhale +
-                this.pattern.inhale +
-                this.pattern.hold1 +
-                this.pattern.hold2;
-            // 最大时间按分钟
-            const pass_time = pattern_all_time * this.state.cycle / 60;
-
             if (pass_time > this.session.maxTimeMin) {
                 console.log(`phase ${this.state.phase} ${pass_time}`);
+                this.sessionCompleteEmitter.emit({
+                    cycles: this.state.cycle,
+                    minutes: pass_time,
+                });
                 this.stop();
             }
         }

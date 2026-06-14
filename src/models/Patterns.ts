@@ -7,6 +7,16 @@ export const BOX_BREATHING: BreathPattern = {
     exhale:4,
     hold2:4,
 };
+export const Resonance: BreathPattern = {
+    // 较长的呼气阶段会增强迷走神经活动 Vagus Nerve
+    name: "Resonance",
+    inhale: 4,
+    hold1: 0,
+    exhale:6,
+    hold2:0,
+};
+
+
 
 export const RELAX_BREATHING: BreathPattern = {
     name: "Relax",
@@ -15,6 +25,16 @@ export const RELAX_BREATHING: BreathPattern = {
     exhale:6,
     hold2:2,
 }
+
+export const PATTERN_SXZ: BreathPattern = {
+    // 不是为了慢呼吸 而是 身体低消耗 稳定高效率
+  name: "禅修",
+  inhale: 8,
+  hold1: 4,
+  exhale: 8,
+  hold2: 4,
+};
+
 
 
 export const PATTERN_478: BreathPattern = {
@@ -26,7 +46,6 @@ export const PATTERN_478: BreathPattern = {
 };
 
 export const PATTERNS = [
-  BOX_BREATHING,
-  RELAX_BREATHING,
-  PATTERN_478,
+    Resonance,
+    PATTERN_SXZ,
 ];
